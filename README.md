@@ -97,12 +97,16 @@ Checkpoints: `checkpoints/` (gitignored).
 After training, launch the web UI:
 
 ```bash
-streamlit run streamlit_app.py
+streamlit run pubmedqa_evidence_demo.py --server.port 8510
 ```
+
+Or double-click **`run_pubmedqa_demo.bat`** (Windows) / `./run_pubmedqa_demo.sh` (Mac/Linux).
+
+Uses **port 8510** so it does not clash with another project’s Streamlit on **8501**. Open **http://localhost:8510**.
 
 The app loads checkpoints from `checkpoints/` and compares **yes / no / maybe** predictions for a question + abstract. Includes a non-clinical-use disclaimer.
 
-**Streamlit Community Cloud (optional public URL):** connect your GitHub repo, set main file to `streamlit_app.py`, and provide checkpoints (see `docs/STREAMLIT_DEMO.md`). For vivas, local `streamlit run` on your laptop is usually easiest.
+**Streamlit Community Cloud:** set main file to **`pubmedqa_evidence_demo.py`** (not generic `streamlit_app.py`). See `docs/STREAMLIT_DEMO.md`.
 
 ## Project layout
 
@@ -111,7 +115,8 @@ pubmedqa-evidence-classification/
 ├── README.md
 ├── requirements.txt
 ├── run_experiment.py
-├── streamlit_app.py
+├── pubmedqa_evidence_demo.py
+├── run_pubmedqa_demo.bat
 ├── src/
 │   ├── config.py
 │   ├── data_loading.py

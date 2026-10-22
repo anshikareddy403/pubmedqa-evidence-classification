@@ -13,6 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
 from .config import LABEL2ID, RunConfig
+from .sklearn_compat import ensure_baseline_pipeline_compat
 from .utils import set_seed, timer
 
 
@@ -35,6 +36,8 @@ def build_baseline_pipeline(config: RunConfig) -> Pipeline:
                     max_iter=2000,
                     class_weight="balanced",
                     random_state=config.seed,
+                    multi_class="multinomial",
+                    solver="lbfgs",
                 ),
             ),
         ]
@@ -66,8 +69,15 @@ def train_baseline(
     return pipe, meta
 
 
+def load_baseline_pipeline(model_path: Path) -> Pipeline:
+    """Load baseline joblib and patch sklearn version mismatches."""
+    pipe = joblib.load(model_path)
+    return ensure_baseline_pipeline_compat(pipe)
+
+
 def predict_baseline(pipe: Pipeline, texts: list[str]) -> Tuple[np.ndarray, np.ndarray]:
     """Return predicted class ids and max prob scores."""
+    pipe = ensure_baseline_pipeline_compat(pipe)
     pred_ids = pipe.predict(texts)
     if hasattr(pipe, "predict_proba"):
         proba = pipe.predict_proba(texts)
