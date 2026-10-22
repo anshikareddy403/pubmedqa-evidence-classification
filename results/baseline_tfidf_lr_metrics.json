@@ -1,0 +1,74 @@
+{
+  "run_name": "baseline_tfidf_lr",
+  "seed": 42,
+  "smoke_test": true,
+  "metrics": {
+    "accuracy": 0.6,
+    "macro_f1": 0.5128205128205128,
+    "weighted_f1": 0.5884615384615384,
+    "classification_report": {
+      "yes": {
+        "precision": 0.6153846153846154,
+        "recall": 0.7272727272727273,
+        "f1-score": 0.6666666666666666,
+        "support": 22.0
+      },
+      "no": {
+        "precision": 0.5833333333333334,
+        "recall": 0.5,
+        "f1-score": 0.5384615384615384,
+        "support": 14.0
+      },
+      "maybe": {
+        "precision": 0.5,
+        "recall": 0.25,
+        "f1-score": 0.3333333333333333,
+        "support": 4.0
+      },
+      "accuracy": 0.6,
+      "macro avg": {
+        "precision": 0.5662393162393163,
+        "recall": 0.49242424242424243,
+        "f1-score": 0.5128205128205128,
+        "support": 40.0
+      },
+      "weighted avg": {
+        "precision": 0.5926282051282052,
+        "recall": 0.6,
+        "f1-score": 0.5884615384615384,
+        "support": 40.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        16,
+        5,
+        1
+      ],
+      [
+        7,
+        7,
+        0
+      ],
+      [
+        3,
+        0,
+        1
+      ]
+    ]
+  },
+  "training": {
+    "model_name": "tfidf_logistic_regression",
+    "training": {
+      "elapsed_seconds": 0.03276568900000143,
+      "label": "baseline_training"
+    },
+    "saved_path": "/cursor/stores/bc-5f5d99ec-f562-409d-9dcf-5bdf32babee0/pubmedqa-evidence-classification/checkpoints/baseline_tfidf_lr.joblib",
+    "inference_latency": {
+      "n_samples": 20,
+      "mean_seconds_per_example": 0.0021085380999949165,
+      "std_seconds_per_example": 0.00014921097966722475,
+      "total_seconds": 0.04217076199989833
+    }
+  }
+}
