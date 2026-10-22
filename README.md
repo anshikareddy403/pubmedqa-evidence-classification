@@ -51,7 +51,7 @@ pip install -r requirements.txt
 
 ### Google Colab (optional GPU)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USER/pubmedqa-evidence-classification/blob/main/notebooks/pubmedqa_evidence_classification.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anshikareddy403/pubmedqa-evidence-classification/blob/main/notebooks/pubmedqa_evidence_classification.ipynb)
 
 Open `notebooks/pubmedqa_evidence_classification.ipynb` (update the badge URL after you push to GitHub). Enable **Runtime → Change runtime type → GPU** for transformer fine-tuning.
 
@@ -92,6 +92,18 @@ Checkpoints: `checkpoints/` (gitignored).
 
 `notebooks/pubmedqa_evidence_classification.ipynb` mirrors the pipeline: EDA, training, evaluation, timing comparison, and export to `results/`.
 
+### Streamlit demo (course demonstration)
+
+After training, launch the web UI:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The app loads checkpoints from `checkpoints/` and compares **yes / no / maybe** predictions for a question + abstract. Includes a non-clinical-use disclaimer.
+
+**Streamlit Community Cloud (optional public URL):** connect your GitHub repo, set main file to `streamlit_app.py`, and provide checkpoints (see `docs/STREAMLIT_DEMO.md`). For vivas, local `streamlit run` on your laptop is usually easiest.
+
 ## Project layout
 
 ```
@@ -99,6 +111,7 @@ pubmedqa-evidence-classification/
 ├── README.md
 ├── requirements.txt
 ├── run_experiment.py
+├── streamlit_app.py
 ├── src/
 │   ├── config.py
 │   ├── data_loading.py

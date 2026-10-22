@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -22,6 +23,34 @@ from transformers import (
 from .config import ID2LABEL, LABEL2ID, LABELS, RunConfig
 from .evaluate import compute_metrics as sk_compute_metrics
 from .utils import set_seed, timer
+
+
+def _training_arguments_class():
+    """
+    Return a clean TrainingArguments class.
+
+    Colab notebooks sometimes monkey-patch TrainingArguments.__init__ for
+    warmup_ratio; re-running that cell causes RecursionError. Reload the
+    module if the patch is detected.
+    """
+    import importlib
+    import transformers.training_args as training_args_mod
+
+    init = TrainingArguments.__init__
+    if getattr(init, "__name__", "") == "patched_init":
+        importlib.reload(training_args_mod)
+    return training_args_mod.TrainingArguments
+
+
+def _instantiate_training_arguments(**kwargs: Any) -> TrainingArguments:
+    """Build TrainingArguments without relying on a possibly patched import."""
+    ta_cls = _training_arguments_class()
+    try:
+        return ta_cls(**kwargs, eval_strategy="epoch")
+    except TypeError:
+        kwargs = dict(kwargs)
+        kwargs["evaluation_strategy"] = "epoch"
+        return ta_cls(**kwargs)
 
 
 def _encode_labels(df: pd.DataFrame) -> pd.DataFrame:
@@ -93,15 +122,20 @@ def train_transformer(
     val_ds = build_tokenized_dataset(val_df, tokenizer, config.max_length)
 
     use_cuda = torch.cuda.is_available()
-    args = TrainingArguments(
+    batch_size = config.effective_batch_size()
+    num_epochs = config.effective_num_epochs()
+    steps_per_epoch = max(1, math.ceil(len(train_ds) / batch_size))
+    total_steps = max(1, steps_per_epoch * num_epochs)
+    warmup_steps = max(1, int(config.warmup_ratio * total_steps))
+
+    training_kw: Dict[str, Any] = dict(
         output_dir=str(output_dir),
-        num_train_epochs=config.effective_num_epochs(),
-        per_device_train_batch_size=config.effective_batch_size(),
-        per_device_eval_batch_size=config.effective_batch_size(),
+        num_train_epochs=num_epochs,
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
         learning_rate=config.learning_rate,
         weight_decay=config.weight_decay,
-        warmup_ratio=config.warmup_ratio,
-        eval_strategy="epoch",
+        warmup_steps=warmup_steps,
         save_strategy="epoch",
         load_best_model_at_end=True,
         metric_for_best_model="macro_f1",
@@ -112,16 +146,22 @@ def train_transformer(
         report_to="none",
         fp16=use_cuda,
     )
+    args = _instantiate_training_arguments(**training_kw)
 
-    trainer = Trainer(
+    trainer_kwargs: Dict[str, Any] = dict(
         model=model,
         args=args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        processing_class=tokenizer,
         compute_metrics=_metrics_from_eval,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=config.early_stopping_patience)],
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=config.early_stopping_patience)
+        ],
     )
+    try:
+        trainer = Trainer(**trainer_kwargs, processing_class=tokenizer)
+    except TypeError:
+        trainer = Trainer(**trainer_kwargs, tokenizer=tokenizer)
 
     resume = any(output_dir.glob("checkpoint-*"))
     with timer("transformer_training") as t:
