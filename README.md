@@ -139,6 +139,4 @@ Default seed: **42** (`src/config.py`). Seeds are set for Python, NumPy, PyTorch
 - No hyperparameter search (fixed epochs + early stopping on validation macro-F1).
 - Inference latency reported for single-example batch size 1 on available hardware (CPU vs GPU will differ).
 
-## Author
 
-Prepared for **Anshika Reddy** — push this folder to GitHub when ready (no credentials are included in this bundle).
