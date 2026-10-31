@@ -1,6 +1,6 @@
 # PubMedQA Evidence Classification
 
-Master's project scaffold for **Anshika Reddy**: classify biomedical evidence as **yes / no / maybe** from a research question plus PubMed abstract context.
+MAAI902 submission — **Anshika Reddy** (1651353), University of Wollongong in Dubai: classify biomedical evidence as **yes / no / maybe** from a research question plus PubMed abstract context.
 
 ## Task
 
@@ -43,7 +43,6 @@ ds = load_dataset("qiaojin/PubMedQA", "pqa_labeled")
 ## Setup
 
 ```bash
-cd pubmedqa-evidence-classification
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -86,7 +85,7 @@ Metrics and artifacts are written under `results/`:
 - `{run_name}_confusion_matrix.png`
 - `{run_name}_maybe_errors.csv` — error analysis focused on `maybe`
 
-Checkpoints: `checkpoints/` (gitignored).
+Checkpoints: train locally or in Colab; the `checkpoints/` folder is gitignored and not pushed to GitHub.
 
 ### Notebook
 
@@ -106,27 +105,23 @@ Uses **port 8510** so it does not clash with another project’s Streamlit on **
 
 The app loads checkpoints from `checkpoints/` and compares **yes / no / maybe** predictions for a question + abstract. Includes a non-clinical-use disclaimer.
 
-**Streamlit Community Cloud:** set main file to **`pubmedqa_evidence_demo.py`** (not generic `streamlit_app.py`). See `docs/STREAMLIT_DEMO.md`.
+**Streamlit Community Cloud:** set main file to **`pubmedqa_evidence_demo.py`** (not generic `streamlit_app.py`).
 
 ## Project layout
 
 ```
-pubmedqa-evidence-classification/
 ├── README.md
 ├── requirements.txt
 ├── run_experiment.py
 ├── pubmedqa_evidence_demo.py
-├── run_pubmedqa_demo.bat
+├── docs/
+│   ├── PubMedQA-Technical-Report-Anshika-Reddy.docx
+│   ├── PubMedQA-Evidence-Classification-Presentation.pptx
+│   └── figures/
 ├── src/
-│   ├── config.py
-│   ├── data_loading.py
-│   ├── train_baseline.py
-│   ├── train_transformer.py
-│   └── evaluate.py
 ├── notebooks/
-│   └── pubmedqa_evidence_classification.ipynb
 ├── results/
-└── checkpoints/   # created at runtime
+└── checkpoints/
 ```
 
 ## Random seed
@@ -139,4 +134,6 @@ Default seed: **42** (`src/config.py`). Seeds are set for Python, NumPy, PyTorch
 - No hyperparameter search (fixed epochs + early stopping on validation macro-F1).
 - Inference latency reported for single-example batch size 1 on available hardware (CPU vs GPU will differ).
 
+## Author
 
+**Anshika Reddy** — MAAI902 NLP and LLMs. Written report and slides are under `docs/`.
